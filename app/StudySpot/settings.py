@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import secrets
+from dotenv import load_dotenv
+import os
+import pymysql
+pymysql.install_as_MySQLdb()
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-qyht%$44n4)deb-1&foth0_39@3g1e-ju)9*%ewuo9n=80ns71'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('ENV') == 'dev'
 
 ALLOWED_HOSTS = ['*']
 
@@ -129,3 +135,41 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 只在生产环境 (DEBUG=False) 中启用 WhiteNoise 和相关静态文件配置
+if not DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('DB_NAME', 'studyspot'),
+            'USER': os.environ.get('DB_USERNAME', 'group7'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'Group777'),
+            'HOST': os.environ.get('DB_HOST', ''),  # 腾讯云数据库地址
+            'PORT': os.environ.get('DB_PORT', '3306'),
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+                'connect_timeout': 30,
+            }
+        }
+    }
+
+    # 设置静态文件收集目录
+    STATIC_ROOT = 'staticfiles'
+    
+    # 在现有中间件列表中插入 WhiteNoise
+    # 注意：必须放在 SecurityMiddleware 之后
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+    
+    # WhiteNoise 存储配置
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+    # SECURE_HSTS_SECONDS = 31536000  # 1年
+    # SECURE_SSL_REDIRECT = True
+    # SESSION_COOKIE_SECURE = True
+    # CSRF_COOKIE_SECURE = True
+    # SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    # SECURE_HSTS_PRELOAD = True
+    # SECURE_CONTENT_TYPE_NOSNIFF = True
+    
+    # 生成新的随机密钥替换当前不安全的密钥
+    SECRET_KEY = ''.join(secrets.choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50))
