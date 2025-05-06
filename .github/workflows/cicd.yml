@@ -4,7 +4,7 @@ name: Django Backend CI/CD
 on:
   push:
     branches:
-      - main
+      - master
 
 # 环境变量
 env:
