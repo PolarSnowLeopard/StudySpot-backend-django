@@ -1,0 +1,18 @@
+version: '3.9'
+
+services:
+  studyspot-backend:
+    image: polarsnowleopard/studyspot-backend:latest
+    restart: always
+    ports:
+      - "7777:7777"
+    env_file:
+      - .env
+    environment:
+      - DJANGO_SETTINGS_MODULE=StudySpot.settings
+    volumes:
+      - static_volume:/project/app/staticfiles
+    command: python -m gunicorn StudySpot.asgi:application -k uvicorn.workers.UvicornWorker -b 0.0.0.0:7777
+
+volumes:
+  static_volume:
