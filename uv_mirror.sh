@@ -1,0 +1,1 @@
+export UV_INDEX_URL=https://mirrors.aliyun.com/pypi/simple/
