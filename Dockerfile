@@ -4,7 +4,7 @@ FROM python:3.12-slim
 # 设置环境变量
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    DJANGO_SETTINGS_MODULE=rf4.settings
+    DJANGO_SETTINGS_MODULE=StudySpot.settings
 
 # 安装uv和必要依赖
 RUN pip install --no-cache-dir uv whitenoise
