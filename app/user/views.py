@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
 from rest_framework import permissions, viewsets
 from .models import CustomUser
-from user.serializers import GroupSerializer, UserInfoSerializer
+from user.serializers import GroupSerializer, UserInfoSerializer, AdminInfoSerializer
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -34,6 +34,16 @@ class UserInfoView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def get(self, request):
         serializer = UserInfoSerializer(request.user)
+        return Response(serializer.data)
+    
+class AdminInfoView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        if not user.is_staff:
+            return Response({'error': '无权限'}, status=status.HTTP_403_FORBIDDEN)
+        serializer = AdminInfoSerializer(user)
         return Response(serializer.data)
 
 class UserViewSet(viewsets.ModelViewSet):

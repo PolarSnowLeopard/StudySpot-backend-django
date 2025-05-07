@@ -17,6 +17,16 @@ class UserInfoSerializer(serializers.ModelSerializer):
             'totalHours': obj.totalHours,
             'violations': obj.violations
         }
+    
+class AdminInfoSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='first_name')
+    role = serializers.SerializerMethodField()
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'name', 'avatar', 'role']
+
+    def get_role(self, obj):
+        return 'admin' if obj.is_staff else 'user'
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
