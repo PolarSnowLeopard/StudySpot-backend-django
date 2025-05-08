@@ -9,6 +9,51 @@ from rest_framework import status
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework.authtoken.models import Token
 
+# 注册接口，用于新用户注册
+class RegisterView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        student_id = request.data.get('studentId')
+        department = request.data.get('department')
+        name = request.data.get('name')
+        phone = request.data.get('phone')
+        email = request.data.get('email')
+        
+        # 验证必填字段
+        if not all([username, password, student_id, department, name]):
+            return Response({'error': '用户名、密码、学号、学院和姓名为必填项'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 检查用户名是否已存在
+        User = get_user_model()
+        if User.objects.filter(username=username).exists():
+            return Response({'error': '用户名已存在'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 检查学号是否已存在
+        if User.objects.filter(studentId=student_id).exists():
+            return Response({'error': '学号已存在'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # 创建新用户
+        try:
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                studentId=student_id,
+                department=department,
+                first_name=name,
+                phone=phone,
+                email=email
+            )
+            # 创建token
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                'message': '注册成功',
+                'token': token.key
+            }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error': f'注册失败: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# 登录接口，学生和管理员均使用该接口进行登录。支持用户名/学号登录
 class LoginView(APIView):
     def post(self, request):
         identifier = request.data.get('identifier')  # 可以是用户名或学号
@@ -30,12 +75,14 @@ class LoginView(APIView):
         else:
             return Response({'error': '用户名/学号或密码错误'}, status=status.HTTP_400_BAD_REQUEST)
 
+# 用户信息接口，学生登录后，可使用该接口获取用户信息，需携带token
 class UserInfoView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def get(self, request):
         serializer = UserInfoSerializer(request.user)
         return Response(serializer.data)
-    
+
+# 管理员信息接口，管理员登录后，可使用该接口获取管理员信息，需携带token
 class AdminInfoView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -46,6 +93,7 @@ class AdminInfoView(APIView):
         serializer = AdminInfoSerializer(user)
         return Response(serializer.data)
 
+# 用户视图集，提供增删改查接口
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
@@ -54,7 +102,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserInfoSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-
+# 组视图集，提供增删改查接口
 class GroupViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
