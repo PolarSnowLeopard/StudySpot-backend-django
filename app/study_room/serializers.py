@@ -15,7 +15,7 @@ class StudyRoomListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = StudyRoom
-        fields = ['id', 'name', 'openTime', 'closeTime', 'status', 'availableSeats', 'totalSeats', 'department']
+        fields = ['id', 'name', 'open_time', 'close_time', 'status', 'availableSeats', 'total_seats', 'department']
     
     def get_availableSeats(self, obj):
         return obj.available_seats
@@ -23,6 +23,8 @@ class StudyRoomListSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         # 将字段名称转换为前端需要的驼峰命名格式
         ret = super().to_representation(instance)
+        ret.pop('open_time')
+        ret.pop('close_time')
         ret['openTime'] = instance.open_time.strftime('%H:%M')
         ret['closeTime'] = instance.close_time.strftime('%H:%M')
         if isinstance(instance.department, Department):
@@ -39,7 +41,7 @@ class StudyRoomDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = StudyRoom
-        fields = ['id', 'name', 'openTime', 'closeTime', 'status', 'availableSeats', 'totalSeats', 'department', 'is_open']
+        fields = ['id', 'name', 'open_time', 'close_time', 'status', 'availableSeats', 'total_seats', 'department', 'is_open']
     
     def get_availableSeats(self, obj):
         return obj.available_seats
@@ -47,6 +49,8 @@ class StudyRoomDetailSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         # 将字段名称转换为前端需要的驼峰命名格式
         ret = super().to_representation(instance)
+        ret.pop('open_time')
+        ret.pop('close_time')
         ret['openTime'] = instance.open_time.strftime('%H:%M')
         ret['closeTime'] = instance.close_time.strftime('%H:%M')
         if isinstance(instance.department, Department):
