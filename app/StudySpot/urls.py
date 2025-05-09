@@ -28,4 +28,10 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/user/', include('user.urls')),
+    path('api/study_room/', include('study_room.urls')),
+    path('api/seat/', include('seat.urls')),
+    path('api/reservation/', include('reservation.urls')),
+    path('api/notification/', include('notification.urls')),
+    path('api/system/', include('system_settings.urls')),
+    path('api/statistics/', include('study_statistics.urls')),
 ]
