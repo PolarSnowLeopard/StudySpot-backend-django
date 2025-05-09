@@ -12,7 +12,9 @@ services:
       - DJANGO_SETTINGS_MODULE=StudySpot.settings
     volumes:
       - static_volume:/project/app/staticfiles
+      - log_volume:/project/logs
     command: python -m gunicorn StudySpot.asgi:application -k uvicorn.workers.UvicornWorker -b 0.0.0.0:7777
 
 volumes:
   static_volume:
+  log_volume:

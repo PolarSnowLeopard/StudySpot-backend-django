@@ -15,6 +15,7 @@ import secrets
 from dotenv import load_dotenv
 import os
 import pymysql
+import logging.config
 pymysql.install_as_MySQLdb()
 load_dotenv()
 
@@ -184,3 +185,59 @@ if not DEBUG:
     
     # 生成新的随机密钥替换当前不安全的密钥
     SECRET_KEY = ''.join(secrets.choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50))
+
+    # 日志配置
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+                'style': '{',
+            },
+            'simple': {
+                'format': '{levelname} {message}',
+                'style': '{',
+            },
+        },
+        'handlers': {
+            'console': {
+                'level': 'INFO',
+                'class': 'logging.StreamHandler',
+                'formatter': 'simple',
+            },
+            'file': {
+                'level': 'DEBUG',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': '/project/logs/django.log',  # Docker容器内的路径
+                'maxBytes': 10485760,  # 10MB
+                'backupCount': 10,
+                'formatter': 'verbose',
+            },
+            'error_file': {
+                'level': 'ERROR',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': '/project/logs/error.log',
+                'maxBytes': 10485760,  # 10MB
+                'backupCount': 10,
+                'formatter': 'verbose',
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console', 'file', 'error_file'],
+                'level': 'INFO',
+                'propagate': True,
+            },
+            'django.request': {
+                'handlers': ['error_file'],
+                'level': 'ERROR',
+                'propagate': False,
+            },
+            'study_room': {  # 应用特定的日志
+                'handlers': ['console', 'file', 'error_file'],
+                'level': 'DEBUG',
+                'propagate': False,
+            },
+        },
+    }
