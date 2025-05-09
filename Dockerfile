@@ -12,14 +12,14 @@ RUN pip install --no-cache-dir uv whitenoise
 # 创建并设置工作目录
 WORKDIR /project
 
-# 创建日志目录
-RUN mkdir -p /project/logs
-
 # 复制整个项目到容器内
 COPY . .
 
-# 使用uv根据项目配置安装依赖
+# 先安装项目依赖
 RUN uv pip install --system -e .
+
+# 创建日志目录 (在安装后创建)
+RUN mkdir -p /project/logs
 
 # 设置工作目录为Django项目目录
 WORKDIR /project/app

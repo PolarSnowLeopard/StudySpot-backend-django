@@ -209,7 +209,7 @@ if not DEBUG:
             'file': {
                 'level': 'DEBUG',
                 'class': 'logging.handlers.RotatingFileHandler',
-                'filename': '/project/logs/django.log',  # Docker容器内的路径
+                'filename': os.path.join(BASE_DIR, '../logs/django.log'),  # 使用相对路径
                 'maxBytes': 10485760,  # 10MB
                 'backupCount': 10,
                 'formatter': 'verbose',
@@ -217,7 +217,7 @@ if not DEBUG:
             'error_file': {
                 'level': 'ERROR',
                 'class': 'logging.handlers.RotatingFileHandler',
-                'filename': '/project/logs/error.log',
+                'filename': os.path.join(BASE_DIR, '../logs/error.log'),  # 使用相对路径
                 'maxBytes': 10485760,  # 10MB
                 'backupCount': 10,
                 'formatter': 'verbose',
