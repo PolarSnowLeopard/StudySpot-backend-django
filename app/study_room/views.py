@@ -35,10 +35,16 @@ class StudyRoomViewSet(viewsets.ModelViewSet):
     def list(self, request):
         """获取自习室列表"""
         queryset = self.get_queryset()
+        
         # 处理查询参数，如按院系筛选
         department = request.query_params.get('department')
         if department:
             queryset = queryset.filter(department__name=department)
+        
+        # 添加关键词搜索功能
+        keyword = request.query_params.get('keyword')
+        if keyword:
+            queryset = queryset.filter(name__icontains=keyword)
         
         # 只返回开放的自习室
         queryset = queryset.filter(is_open=True)
