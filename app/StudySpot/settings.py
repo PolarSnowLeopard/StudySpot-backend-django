@@ -48,6 +48,12 @@ REST_FRAMEWORK = {
 INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
+    'study_room',
+    'seat',
+    'reservation',
+    'notification',
+    'system_settings',
+    'study_statistics',
     'user',
     'django.contrib.admin',
     'django.contrib.auth',
