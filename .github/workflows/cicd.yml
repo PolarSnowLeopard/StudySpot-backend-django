@@ -60,7 +60,7 @@ jobs:
           uv venv
           source .venv/bin/activate
           uv pip install pytest pytest-cov
-          uv pip sync
+          uv sync
 
       - name: Test with pytest
         run: |
